@@ -1,0 +1,355 @@
+<!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-icon"><i class="bi bi-grid-1x2-fill"></i></div>
+      <div>
+        <div class="brand-name">IDE PRIORITY</div>
+        <div class="brand-sub">Riset Ide, Pilih yang Terbaik</div>
+      </div>
+    </div>
+
+    <nav class="nav flex-column menu">
+      <a class="nav-link active" href="#" data-page="dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a class="nav-link" href="#" data-page="data"><i class="bi bi-table"></i> Data Ide</a>
+      <a class="nav-link" href="#" data-page="matriks"><i class="bi bi-bullseye"></i> Matriks Kuadran</a>
+      <a class="nav-link" href="#" data-page="grafik"><i class="bi bi-bar-chart-line"></i> Grafik Total Score</a>
+      <a class="nav-link" href="#" data-page="prioritas"><i class="bi bi-trophy"></i> Ide Prioritas</a>
+      <a class="nav-link" href="#" data-page="laporan"><i class="bi bi-file-earmark-text"></i> Laporan</a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div><strong>Kelompok 9</strong></div>
+      <div>Kelas XI PPLG 2</div>
+      <div>Semester Ganjil 2026–2027</div>
+    </div>
+  </aside>
+
+  <!-- ===================== KONTEN ===================== -->
+  <div class="main">
+
+    <!-- Top bar (untuk tombol menu di layar kecil) -->
+    <header class="topbar">
+      <button class="btn btn-light btn-sm d-lg-none" id="btnMenu" aria-label="Buka menu">
+        <i class="bi bi-list fs-5"></i>
+      </button>
+      <h1 class="page-title" id="pageTitle">Dashboard</h1>
+      <button type="button" class="theme-toggle ms-auto" id="themeToggle" aria-pressed="true">
+        <i class="bi bi-sun-fill" aria-hidden="true"></i>
+        <span>Mode terang</span>
+      </button>
+    </header>
+
+    <main class="content">
+
+      <!-- ================= 1. DASHBOARD ================= -->
+      <section class="page dashboard-page" id="page-dashboard">
+        <div class="dashboard-heading">
+          <div>
+            <span class="dashboard-eyebrow">IDE PRIORITY <span> / </span> OVERVIEW</span>
+            <h2>Dashboard Analitik</h2>
+            <p id="dashSummary"></p>
+          </div>
+          <button type="button" class="btn dashboard-add-button" id="dashboardAddIdea">
+            <i class="bi bi-plus-lg"></i> Tambah Ide
+          </button>
+        </div>
+
+        <div class="dashboard-stats" id="summaryCards"></div>
+
+        <div class="row g-3 dashboard-row">
+          <div class="col-12 col-xl-8">
+            <section class="panel dashboard-panel h-100">
+              <div class="dashboard-panel-heading">
+                <div>
+                  <div class="panel-title">Tren Total Score</div>
+                  <p>Perbandingan nilai dari seluruh ide</p>
+                </div>
+                <span class="dashboard-period"><i class="bi bi-activity"></i> Semua ide</span>
+              </div>
+              <div class="chart-box dashboard-line-chart"><canvas id="chartDash"></canvas></div>
+            </section>
+          </div>
+          <div class="col-12 col-xl-4">
+            <section class="panel dashboard-panel dashboard-quadrant-panel h-100">
+              <div class="dashboard-panel-heading">
+                <div>
+                  <div class="panel-title">Distribusi Kuadran</div>
+                  <p>Posisi ide berdasarkan evaluasi</p>
+                </div>
+              </div>
+              <div class="dashboard-donut-wrap">
+                <div class="chart-box dashboard-donut-chart"><canvas id="chartQuadrant"></canvas></div>
+                <div class="dashboard-donut-center"><strong id="dashIdeaCount">0</strong><span>IDE</span></div>
+              </div>
+              <div class="dashboard-legend" id="dashQuadrantLegend"></div>
+            </section>
+          </div>
+        </div>
+
+        <div class="row g-3 dashboard-row">
+          <div class="col-12 col-xl-8">
+            <section class="panel dashboard-panel h-100">
+              <div class="dashboard-panel-heading">
+                <div>
+                  <div class="panel-title">Ide dengan Skor Tertinggi</div>
+                  <p>Urutan ide berdasarkan total nilai</p>
+                </div>
+                <button type="button" class="dashboard-text-button" data-dashboard-page="data">Lihat semua <i class="bi bi-arrow-right"></i></button>
+              </div>
+              <div class="table-responsive dashboard-table-wrap">
+                <table class="table dashboard-table align-middle mb-0">
+                  <thead>
+                    <tr><th>IDE</th><th>KUADRAN</th><th class="text-end">TOTAL SCORE</th></tr>
+                  </thead>
+                  <tbody id="dashIdeasTable"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+          <div class="col-12 col-xl-4">
+            <section class="panel dashboard-panel h-100">
+              <div class="dashboard-panel-heading">
+                <div>
+                  <div class="panel-title">Perbandingan Skor</div>
+                  <p>Lima ide dengan nilai tertinggi</p>
+                </div>
+              </div>
+              <div class="chart-box dashboard-priority-chart"><canvas id="chartPriority"></canvas></div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 2. DATA IDE ================= -->
+      <section class="page d-none" id="page-data">
+        <div class="page-heading">
+          <span class="page-eyebrow">IDE PRIORITY <span>/</span> DATA</span>
+          <h2>Kelola Data Ide</h2>
+          <p>Atur, cari, dan evaluasi semua ide dalam satu tempat.</p>
+        </div>
+        <div class="panel">
+          <div class="toolbar">
+            <div class="input-group search-box">
+              <span class="input-group-text"><i class="bi bi-search"></i></span>
+              <input type="text" class="form-control" id="searchInput" placeholder="Cari nama ide...">
+            </div>
+            <div class="toolbar-actions">
+              <button class="btn btn-outline-secondary" id="btnReset"><i class="bi bi-arrow-counterclockwise"></i> Reset Data</button>
+              <button class="btn btn-primary" id="btnAdd"><i class="bi bi-plus-lg"></i> Tambah Ide</button>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table align-middle data-table">
+              <thead>
+                <tr>
+                  <th style="width:50px">No.</th>
+                  <th>Nama Ide</th>
+                  <th class="text-center">Feasibility</th>
+                  <th class="text-center">Impact</th>
+                  <th class="text-center">Total Score</th>
+                  <th>Kuadran</th>
+                  <th class="text-end" style="width:110px">Action</th>
+                </tr>
+              </thead>
+              <tbody id="ideaTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 3. MATRIKS KUADRAN ================= -->
+      <section class="page d-none" id="page-matriks">
+        <div class="page-heading">
+          <span class="page-eyebrow">IDE PRIORITY <span>/</span> ANALISIS</span>
+          <h2>Matriks Kuadran</h2>
+          <p>Jelajahi posisi setiap ide berdasarkan kelayakan dan dampaknya.</p>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Matriks Feasibility vs Impact</div>
+          <div class="matrix-3d-shell" id="matrix3dContainer">
+            <canvas class="matrix-3d-canvas" aria-label="Matriks prioritas ide 3D"></canvas>
+            <div class="matrix-3d-ui matrix-3d-title">
+              <b>Matriks Prioritas Ide</b>
+              <span>Kelayakan × Dampak × Total Nilai</span>
+            </div>
+            <div class="matrix-3d-ui matrix-3d-legend">
+              <div><i class="utama"></i>Prioritas Utama (kanan atas)</div>
+              <div><i class="potensi"></i>Potensi (kiri atas)</div>
+              <div><i class="pertimbangkan"></i>Pertimbangkan (kanan bawah)</div>
+              <div><i class="tunda"></i>Tunda (kiri bawah)</div>
+            </div>
+            <div class="matrix-3d-ui matrix-3d-hint">Arahkan atau klik titik: detail · Seret: putar · Scroll: zoom · Klik kanan: geser</div>
+            <button type="button" class="matrix-3d-reset">Reset tampilan</button>
+            <div class="matrix-3d-tooltip"></div>
+            <div class="matrix-3d-card">
+              <button type="button" class="matrix-3d-close" aria-label="Tutup">×</button>
+              <h2 class="matrix-3d-card-name"></h2>
+              <span class="matrix-3d-card-tag"></span>
+              <dl class="matrix-3d-card-details"></dl>
+            </div>
+          </div>
+        </div>
+        <section class="panel matrix-recommendation mt-3" aria-labelledby="matrixRecommendationTitle">
+          <div class="panel-title" id="matrixRecommendationTitle">REKOMENDASI PRIORITAS UTAMA</div>
+          <div id="matrixRecommendation"></div>
+        </section>
+      </section>
+
+      <!-- ================= 4. GRAFIK TOTAL SCORE ================= -->
+      <section class="page d-none" id="page-grafik">
+        <div class="page-heading">
+          <span class="page-eyebrow">IDE PRIORITY <span>/</span> ANALISIS</span>
+          <h2>Perbandingan Skor</h2>
+          <p>Bandingkan total nilai ide untuk melihat peluang terbaik.</p>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Perbandingan Total Score (Urut dari Tertinggi)</div>
+          <div class="chart-box chart-lg"><canvas id="chartBar"></canvas></div>
+          <p class="note mb-0">Batang hijau tua menandakan ide dengan Total Score tertinggi.</p>
+        </div>
+      </section>
+
+      <!-- ================= 5. IDE PRIORITAS ================= -->
+      <section class="page d-none" id="page-prioritas">
+        <div class="page-heading">
+          <span class="page-eyebrow">IDE PRIORITY <span>/</span> HASIL</span>
+          <h2>Ide Prioritas</h2>
+          <p>Kenali ide dengan nilai tertinggi dan alasan pemilihannya.</p>
+        </div>
+        <div id="priorityContent"></div>
+      </section>
+
+      <!-- ================= 6. LAPORAN ================= -->
+      <section class="page d-none" id="page-laporan">
+        <div class="page-heading">
+          <span class="page-eyebrow">IDE PRIORITY <span>/</span> DOKUMEN</span>
+          <h2>Laporan Evaluasi</h2>
+          <p>Ringkasan hasil evaluasi ide yang siap dicetak atau disimpan.</p>
+        </div>
+        <div class="d-flex justify-content-end mb-3 no-print">
+          <button class="btn btn-primary" id="btnPrint"><i class="bi bi-printer"></i> Print Report</button>
+        </div>
+
+        <div class="report" id="reportArea">
+          <div class="report-head">
+            <h2>Laporan Evaluasi Ide – IDE PRIORITY</h2>
+            <div class="report-sub">Riset Ide, Pilih yang Terbaik</div>
+            <div class="report-meta">
+              Kelompok 9 &middot; Kelas XI PPLG 2 &middot; Semester Ganjil 2026–2027<br>
+              Mata Pelajaran: Kreativitas, Inovasi, dan Kewirausahaan
+            </div>
+          </div>
+
+          <h3>1. Jumlah Ide yang Dievaluasi</h3>
+          <p id="repTotal"></p>
+
+          <h3>2. Tabel Hasil Penilaian</h3>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm align-middle">
+              <thead>
+                <tr><th>No.</th><th>Nama Ide</th><th class="text-center">Feasibility</th><th class="text-center">Impact</th><th class="text-center">Total Score</th><th>Kuadran</th></tr>
+              </thead>
+              <tbody id="repTableBody"></tbody>
+            </table>
+          </div>
+
+          <h3>3. Distribusi Kuadran</h3>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm w-auto">
+              <thead><tr><th>Kuadran</th><th class="text-center">Jumlah Ide</th></tr></thead>
+              <tbody id="repQuadBody"></tbody>
+            </table>
+          </div>
+
+          <h3>4. Grafik Feasibility vs Impact</h3>
+          <div class="chart-scroll">
+            <div class="chart-box chart-report matrix-box"><canvas id="chartRepMatrix"></canvas></div>
+          </div>
+
+          <h3>5. Grafik Total Score</h3>
+          <div class="chart-box chart-report"><canvas id="chartRepBar"></canvas></div>
+
+          <h3>6. Ide dengan Skor Tertinggi</h3>
+          <div id="repTop"></div>
+
+          <h3>7. Analisis Singkat</h3>
+          <div id="repAnalysis"></div>
+
+          <h3>8. Kesimpulan</h3>
+          <div id="repConclusion"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ===================== MODAL TAMBAH / EDIT ===================== -->
+  <div class="modal fade" id="ideaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <form class="modal-content" id="ideaForm" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTitle">Tambah Ide</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="ideaId">
+
+          <div class="mb-3">
+            <label for="ideaName" class="form-label">Nama Ide</label>
+            <input type="text" class="form-control" id="ideaName" maxlength="100" placeholder="Contoh: Fitur Wishlist Bersama">
+            <div class="invalid-feedback">Nama ide tidak boleh kosong.</div>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-6">
+              <label for="ideaFeas" class="form-label">Feasibility (1–5)</label>
+              <select class="form-select" id="ideaFeas">
+                <option value="">Pilih...</option>
+                <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                <option value="4">4</option><option value="5">5</option>
+              </select>
+              <div class="invalid-feedback">Pilih nilai 1 sampai 5.</div>
+            </div>
+            <div class="col-6">
+              <label for="ideaImpact" class="form-label">Impact (1–5)</label>
+              <select class="form-select" id="ideaImpact">
+                <option value="">Pilih...</option>
+                <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                <option value="4">4</option><option value="5">5</option>
+              </select>
+              <div class="invalid-feedback">Pilih nilai 1 sampai 5.</div>
+            </div>
+          </div>
+
+          <div class="preview-box mt-3" id="formPreview">
+            Total Score: <strong id="prevTotal">-</strong> &middot; Kuadran: <span id="prevQuad">-</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL KONFIRMASI ===================== -->
+  <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmTitle">Konfirmasi</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+        </div>
+        <div class="modal-body" id="confirmText"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-danger" id="confirmOk">Ya, Lanjutkan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay untuk menutup sidebar di layar kecil -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
