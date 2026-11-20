@@ -1122,12 +1122,31 @@ body:not(.dark-mode) .dashboard-text-button:hover { color: #117986; }
 }
 .menu .nav-link.active i { color: #315d7c; }
 .sidebar-footer {
+  display: flex;
+  align-items: center;
+  gap: 11px;
   padding: 14px 20px 18px;
   border-top-color: #edf0f3;
   color: #7b8793;
   font-size: 11px;
 }
-.sidebar-footer strong { color: #344456; font-weight: 650; }
+.team-mark {
+  display: grid;
+  width: 35px;
+  height: 35px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid #dfe6eb;
+  border-radius: 9px;
+  background: #f1f5f7;
+  color: #315c78;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: .04em;
+}
+.team-details { display: grid; min-width: 0; gap: 2px; line-height: 1.3; }
+.team-details strong { color: #344456; font-size: 11px; font-weight: 650; }
+.team-details span { color: #7b8793; font-size: 9px; }
 .main { background: #f6f7f8; }
 .topbar {
   min-height: 64px;
@@ -1383,10 +1402,12 @@ body.dark-mode .sidebar {
 body.dark-mode .brand { border-bottom-color: #26323d; }
 body.dark-mode .brand-icon { background: #294861; color: #edf4f8; }
 body.dark-mode .brand-name,
-body.dark-mode .sidebar-footer strong { color: #e4ebf1; }
+body.dark-mode .team-details strong { color: #e4ebf1; }
 body.dark-mode .brand-sub,
-body.dark-mode .sidebar-footer { color: #9aa8b4; }
+body.dark-mode .sidebar-footer,
+body.dark-mode .team-details span { color: #9aa8b4; }
 body.dark-mode .sidebar-footer { border-top-color: #26323d; }
+body.dark-mode .team-mark { border-color: #3a4b58; background: #22323e; color: #b9d1df; }
 body.dark-mode .menu .nav-link { color: #aab6c0; }
 body.dark-mode .menu .nav-link i { color: #8b9ba8; }
 body.dark-mode .menu .nav-link:hover { background: #202d38; color: #f0f4f7; }
