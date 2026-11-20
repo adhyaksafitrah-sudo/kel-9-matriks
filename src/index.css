@@ -216,6 +216,22 @@ body {
   border-radius: var(--radius);
 }
 
+.matrix-3d-stage {
+  display: grid;
+  gap: 12px;
+}
+.matrix-3d-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 4px;
+}
+.matrix-3d-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 .matrix-3d-shell {
   position: relative;
   width: 100%;
@@ -232,6 +248,7 @@ body {
   font: 13px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.035), 0 18px 48px rgba(8,15,32,.16);
 }
+.matrix-3d-stage.controls-active .matrix-3d-shell .matrix-3d-canvas { touch-action: none; }
 .matrix-3d-canvas {
   position: absolute;
   inset: 0;
@@ -243,15 +260,7 @@ body {
   touch-action: auto;
 }
 .matrix-3d-canvas:active { cursor: grabbing; }
-.matrix-3d-shell.controls-active .matrix-3d-canvas { touch-action: none; }
-.matrix-3d-ui {
-  position: absolute;
-  z-index: 3;
-  pointer-events: none;
-}
 .matrix-3d-title {
-  top: 20px;
-  left: 22px;
   display: grid;
   gap: 2px;
 }
@@ -277,8 +286,6 @@ body {
   background: #49d9e6;
 }
 .matrix-3d-stats {
-  top: 18px;
-  right: 150px;
   display: flex;
   gap: 8px;
 }
@@ -306,8 +313,6 @@ body {
   white-space: nowrap;
 }
 .matrix-3d-legend {
-  left: 18px;
-  bottom: 16px;
   display: flex;
   gap: 6px;
   padding: 10px;
@@ -332,8 +337,6 @@ body {
 .matrix-3d-legend .pertimbangkan { background: #2f80ed; box-shadow: 0 0 8px #2f80ed; }
 .matrix-3d-legend .tunda { background: #d64545; }
 .matrix-3d-hint {
-  right: 18px;
-  bottom: 20px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -358,13 +361,15 @@ body {
   letter-spacing: .08em;
 }
 .matrix-3d-hint-active { display: none; }
-.matrix-3d-shell.controls-active .matrix-3d-hint-idle { display: none; }
-.matrix-3d-shell.controls-active .matrix-3d-hint-active { display: inline; }
+.matrix-3d-stage.controls-active .matrix-3d-hint-idle { display: none; }
+.matrix-3d-stage.controls-active .matrix-3d-hint-active { display: inline; }
+.matrix-3d-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
 .matrix-3d-reset {
-  position: absolute;
-  z-index: 4;
-  top: 20px;
-  right: 20px;
   padding: 8px 12px;
   border: 1px solid rgba(120, 160, 230, .26);
   border-radius: 8px;
@@ -581,10 +586,11 @@ body {
   .chart-lg { height: 520px; }
   .winner-stats { grid-template-columns: repeat(2, 1fr); }
   .matrix-3d-shell { height: 620px; }
-  .matrix-3d-stats { top: 78px; right: 18px; }
   .matrix-3d-legend { max-width: 410px; flex-wrap: wrap; }
   .matrix-3d-legend > div { width: calc(50% - 6px); }
-  .matrix-3d-hint { bottom: 25px; }
+  .matrix-3d-toolbar { align-items: flex-start; }
+  .matrix-3d-toolbar-actions { gap: 6px; }
+  .matrix-3d-footer { align-items: flex-start; }
 }
 
 @media (max-width: 575.98px) {
@@ -594,27 +600,23 @@ body {
   .matrix-visual-panel { padding: 10px; }
   .matrix-panel-heading { align-items: flex-start; }
   .matrix-score-note { max-width: 145px; padding-top: 6px; text-align: right; }
-  .matrix-3d-shell { height: 570px; min-height: 570px; }
-  .matrix-3d-title { top: 14px; left: 14px; }
+  .matrix-3d-toolbar { align-items: stretch; flex-direction: column; gap: 10px; }
   .matrix-3d-title b { font-size: 17px; }
   .matrix-3d-title > span:last-child { gap: 5px; font-size: 9px; }
-  .matrix-3d-reset { top: 14px; right: 12px; padding: 7px 9px; font-size: 11px; }
-  .matrix-3d-stats { top: 74px; right: 12px; left: 12px; gap: 5px; }
+  .matrix-3d-toolbar-actions { justify-content: space-between; }
+  .matrix-3d-shell { height: 570px; min-height: 570px; }
+  .matrix-3d-reset { padding: 7px 9px; font-size: 11px; white-space: nowrap; }
+  .matrix-3d-stats { gap: 5px; }
   .matrix-3d-stats > div { min-width: 0; flex: 1; padding: 7px 8px; }
   .matrix-3d-stats strong { font-size: 14px; }
   .matrix-3d-stats span { font-size: 7px; }
-  .matrix-3d-legend {
-    right: 10px;
-    bottom: 10px;
-    left: 10px;
-    gap: 2px;
-    padding: 7px 4px;
-  }
+  .matrix-3d-footer { align-items: stretch; flex-direction: column; }
+  .matrix-3d-legend { gap: 2px; padding: 7px 4px; }
   .matrix-3d-legend > div { width: calc(50% - 2px); padding: 3px 5px; }
   .matrix-3d-legend b { font-size: 9px; }
   .matrix-3d-legend small { font-size: 7px; }
   .matrix-3d-hint { display: none; }
-  .matrix-3d-card { top: auto; right: 12px; bottom: 112px; left: 12px; width: auto; }
+  .matrix-3d-card { top: auto; right: 12px; bottom: 12px; left: 12px; width: auto; }
   .stat-value { font-size: 24px; }
   .report { padding: 18px; }
   .search-box { max-width: 100%; width: 100%; }

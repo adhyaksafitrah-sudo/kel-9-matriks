@@ -5,6 +5,9 @@ const HIGH_PRIORITY = 75;
 const MEDIUM_PRIORITY = 50;
 // Scores 3 and 4 normalize to 5 and 7.5, so their midpoint is 6.25.
 const QUADRANT_SPLIT = 6.25;
+const LABEL_FONT_SIZE = 44;
+const LABEL_TEXT_SIZE = 15;
+const LABEL_CANVAS_HEIGHT = 60;
 const QUADRANT_COLORS = {
   utama: 0x2e9e5b,
   potensi: 0xe0a800,
@@ -44,6 +47,7 @@ const escapeHtml = function (text) {
 };
 
 export function mountMatrix3D(container, ideas) {
+  const viewport = container.querySelector('.matrix-3d-shell');
   const canvas = container.querySelector('.matrix-3d-canvas');
   const reset = container.querySelector('.matrix-3d-reset');
   const tooltip = container.querySelector('.matrix-3d-tooltip');
@@ -62,6 +66,7 @@ export function mountMatrix3D(container, ideas) {
   container.querySelector('#matrixTopScore').textContent = String(topScore / 10) + '/10';
   container.querySelector('#matrixAverageScore').textContent = (averageScore / 10).toFixed(1) + '/10';
   const resources = new Set();
+  const labelSprites = new Set();
   const track = function (resource) {
     if (resource && typeof resource.dispose === 'function') resources.add(resource);
     return resource;
@@ -130,23 +135,27 @@ export function mountMatrix3D(container, ideas) {
   pointLight.position.set(4, 9, 8);
   scene.add(pointLight);
 
+  const labelScaleForViewport = function () {
+    const textHeight = LABEL_TEXT_SIZE * LABEL_CANVAS_HEIGHT / LABEL_FONT_SIZE;
+    return 2 * textHeight * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) /
+      Math.max(viewport.clientHeight, 1);
+  };
+
   function label(text, options) {
-    const config = Object.assign({ size: 1, color: '#9fb4da', weight: 500, font: 44 }, options || {});
+    const config = Object.assign({ color: '#9fb4da', weight: 500 }, options || {});
     const labelCanvas = document.createElement('canvas');
     const context = labelCanvas.getContext('2d');
-    context.font = config.weight + ' ' + config.font + 'px system-ui, sans-serif';
+    context.font = config.weight + ' ' + LABEL_FONT_SIZE + 'px system-ui, sans-serif';
     const width = Math.ceil(context.measureText(text).width) + 16;
     labelCanvas.width = width;
-    labelCanvas.height = config.font + 16;
-    context.font = config.weight + ' ' + config.font + 'px system-ui, sans-serif';
+    labelCanvas.height = LABEL_CANVAS_HEIGHT;
+    context.font = config.weight + ' ' + LABEL_FONT_SIZE + 'px system-ui, sans-serif';
     context.fillStyle = config.color;
     context.textBaseline = 'middle';
     context.lineJoin = 'round';
-    context.lineWidth = Math.max(3, config.font / 8);
+    context.lineWidth = LABEL_FONT_SIZE / 8;
     context.strokeStyle = 'rgba(5, 11, 24, .88)';
     context.strokeText(text, 8, labelCanvas.height / 2 + 2);
-    context.shadowColor = config.color;
-    context.shadowBlur = config.size < 0.6 ? 0 : 7;
     context.fillText(text, 8, labelCanvas.height / 2 + 2);
 
     const texture = track(new THREE.CanvasTexture(labelCanvas));
@@ -155,12 +164,24 @@ export function mountMatrix3D(container, ideas) {
       map: texture,
       transparent: true,
       depthTest: false,
-      depthWrite: false
+      depthWrite: false,
+      sizeAttenuation: false
     }));
     const sprite = new THREE.Sprite(material);
-    sprite.scale.set(labelCanvas.width / labelCanvas.height * config.size, config.size, 1);
+    const aspect = labelCanvas.width / labelCanvas.height;
+    const scale = labelScaleForViewport();
+    sprite.scale.set(aspect * scale, scale, 1);
+    labelSprites.add(sprite);
     sprite.renderOrder = 10;
     return sprite;
+  }
+
+  function resizeLabels() {
+    const scale = labelScaleForViewport();
+    labelSprites.forEach(function (sprite) {
+      const aspect = sprite.scale.x / sprite.scale.y;
+      sprite.scale.set(aspect * scale, scale, 1);
+    });
   }
 
   const gridColor = 0x3a5a96;
@@ -219,20 +240,22 @@ export function mountMatrix3D(container, ideas) {
     [(QUADRANT_SPLIT + 10) / 2, QUADRANT_SPLIT / 2, 'PERTIMBANGKAN', '#82b9ff'],
     [QUADRANT_SPLIT / 2, QUADRANT_SPLIT / 2, 'TUNDA', '#ff8b9b']
   ].forEach(function (item) {
-    const quadrantLabel = label(item[2], { size: 0.56, color: item[3], weight: 700, font: 36 });
+    const quadrantLabel = label(item[2], { color: item[3], weight: 700 });
     quadrantLabel.position.set(item[0], 0.08, item[1]);
     scene.add(quadrantLabel);
   });
-  const cross = new THREE.LineSegments(
-    new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(QUADRANT_SPLIT, 0.02, 0),
-      new THREE.Vector3(QUADRANT_SPLIT, 0.02, 10),
-      new THREE.Vector3(0, 0.02, QUADRANT_SPLIT),
-      new THREE.Vector3(10, 0.02, QUADRANT_SPLIT)
-    ]),
-    new THREE.LineBasicMaterial({ color: 0x5b82c9, transparent: true, opacity: 0.7 })
+  const dividerMaterial = new THREE.MeshBasicMaterial({ color: 0x8db7f5, toneMapped: false });
+  const dividerAlongX = new THREE.Mesh(
+    new THREE.BoxGeometry(10, 0.025, 0.045),
+    dividerMaterial
   );
-  scene.add(cross);
+  dividerAlongX.position.set(5, 0.04, QUADRANT_SPLIT);
+  const dividerAlongZ = new THREE.Mesh(
+    new THREE.BoxGeometry(0.045, 0.025, 10),
+    dividerMaterial
+  );
+  dividerAlongZ.position.set(QUADRANT_SPLIT, 0.04, 5);
+  scene.add(dividerAlongX, dividerAlongZ);
 
   const priorityZoneGeometry = new THREE.BoxGeometry(10 - QUADRANT_SPLIT, 2.5, 10 - QUADRANT_SPLIT);
   const priorityZone = new THREE.Mesh(
@@ -264,15 +287,15 @@ export function mountMatrix3D(container, ideas) {
   addAxis([0, 0, 0], [0, 10, 0]);
   for (let value = 0; value <= 10; value += 2.5) {
     const sourceScore = Math.round(value / 2.5) + 1;
-    let axisLabel = label(sourceScore, { size: 0.42 });
+    let axisLabel = label(sourceScore);
     axisLabel.position.set(value, -0.05, 10.7);
     scene.add(axisLabel);
-    axisLabel = label(sourceScore, { size: 0.42 });
+    axisLabel = label(sourceScore);
     axisLabel.position.set(-0.7, -0.05, value);
     scene.add(axisLabel);
   }
   for (let value = 0; value <= 10; value += 2) {
-    const axisLabel = label(value, { size: 0.42 });
+    const axisLabel = label(value);
     axisLabel.position.set(-0.7, value, -0.05);
     scene.add(axisLabel);
   }
@@ -281,7 +304,7 @@ export function mountMatrix3D(container, ideas) {
     ['Dampak (Z)', -1.9, -0.1, 5],
     ['Total Nilai (Y)', -0.2, 10.9, -0.05]
   ].forEach(function (item) {
-    const axisLabel = label(item[0], { size: 0.62, color: '#dbe7ff', weight: 700 });
+    const axisLabel = label(item[0], { color: '#dbe7ff', weight: 700 });
     axisLabel.position.set(item[1], item[2], item[3]);
     scene.add(axisLabel);
   });
@@ -362,10 +385,8 @@ export function mountMatrix3D(container, ideas) {
       group.add(priorityRing);
       rings.push(priorityRing);
       const rankLabel = label('#' + (ranked.indexOf(idea) + 1), {
-        size: isWinner ? 0.42 : 0.34,
         color: isWinner ? '#ffe19a' : '#c4e6ff',
-        weight: 800,
-        font: 38
+        weight: 800
       });
       rankLabel.position.set(0, isWinner ? 0.78 : 0.68, 0);
       group.add(rankLabel);
@@ -398,7 +419,7 @@ export function mountMatrix3D(container, ideas) {
   );
   scene.add(projection);
   const projectionLabels = [0, 1, 2].map(function () {
-    const projectionLabel = label('0', { size: 0.45, color: '#ffffff', weight: 700 });
+    const projectionLabel = label('0', { color: '#ffffff', weight: 700 });
     projectionLabel.visible = false;
     scene.add(projectionLabel);
     return projectionLabel;
@@ -426,9 +447,10 @@ export function mountMatrix3D(container, ideas) {
       new THREE.Vector3(position.x, 0.35, position.z)
     ];
     projectionLabels.forEach(function (projectionLabel, index) {
-      const nextLabel = label(String(values[index]), { size: 0.45, color: '#ffffff', weight: 700 });
+      const nextLabel = label(String(values[index]), { color: '#ffffff', weight: 700 });
       projectionLabel.material.map = nextLabel.material.map;
       projectionLabel.scale.copy(nextLabel.scale);
+      labelSprites.delete(nextLabel);
       projectionLabel.position.copy(spots[index]);
       projectionLabel.visible = true;
     });
@@ -551,13 +573,14 @@ export function mountMatrix3D(container, ideas) {
   }
 
   function resize() {
-    const width = container.clientWidth;
-    const height = container.clientHeight;
+    const width = viewport.clientWidth;
+    const height = viewport.clientHeight;
     if (!width || !height) return;
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
     camera.fov = width / height < 1.4 ? 74 : 42;
     camera.updateProjectionMatrix();
+    resizeLabels();
   }
 
   canvas.addEventListener('pointermove', onPointerMove);
@@ -568,7 +591,7 @@ export function mountMatrix3D(container, ideas) {
   reset.addEventListener('click', onReset);
   window.addEventListener('resize', resize);
   const resizeObserver = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(resize);
-  if (resizeObserver) resizeObserver.observe(container);
+  if (resizeObserver) resizeObserver.observe(viewport);
   resize();
 
   const ease = function (value) { return 1 - Math.pow(1 - value, 3); };

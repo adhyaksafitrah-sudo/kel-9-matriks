@@ -143,36 +143,44 @@
             </div>
             <span class="matrix-score-note">Kuadran ditentukan oleh Kelayakan &amp; Dampak</span>
           </div>
-          <div class="matrix-3d-shell" id="matrix3dContainer">
-            <canvas class="matrix-3d-canvas" aria-label="Matriks prioritas ide 3D interaktif"></canvas>
-            <div class="matrix-3d-ui matrix-3d-title">
-              <span class="matrix-stage-kicker">PORTFOLIO OVERVIEW</span>
-              <b>Idea landscape</b>
-              <span>X Kelayakan (1–5) <i></i> Z Dampak (1–5) <i></i> Y Total Score (2–10)</span>
+          <div class="matrix-3d-stage" id="matrix3dContainer">
+            <div class="matrix-3d-toolbar">
+              <div class="matrix-3d-title">
+                <span class="matrix-stage-kicker">PORTFOLIO OVERVIEW</span>
+                <b>Idea landscape</b>
+                <span>X Kelayakan (1–5) <i></i> Z Dampak (1–5) <i></i> Y Total Score (2–10)</span>
+              </div>
+              <div class="matrix-3d-toolbar-actions">
+                <div class="matrix-3d-stats" aria-label="Ringkasan matriks">
+                  <div><strong id="matrixIdeaCount">0</strong><span>IDE DINILAI</span></div>
+                  <div><strong id="matrixTopScore">0</strong><span>SKOR TERTINGGI</span></div>
+                  <div><strong id="matrixAverageScore">0</strong><span>RATA-RATA</span></div>
+                </div>
+                <button type="button" class="matrix-3d-reset"><i class="bi bi-arrow-counterclockwise"></i> Reset view</button>
+              </div>
             </div>
-            <div class="matrix-3d-ui matrix-3d-stats" aria-label="Ringkasan matriks">
-              <div><strong id="matrixIdeaCount">0</strong><span>IDE DINILAI</span></div>
-              <div><strong id="matrixTopScore">0</strong><span>SKOR TERTINGGI</span></div>
-              <div><strong id="matrixAverageScore">0</strong><span>RATA-RATA</span></div>
+            <div class="matrix-3d-shell">
+              <canvas class="matrix-3d-canvas" aria-label="Matriks prioritas ide 3D interaktif"></canvas>
+              <div class="matrix-3d-tooltip"></div>
+              <div class="matrix-3d-card">
+                <button type="button" class="matrix-3d-close" aria-label="Tutup detail">×</button>
+                <span class="matrix-card-kicker">IDE DETAIL</span>
+                <h2 class="matrix-3d-card-name"></h2>
+                <span class="matrix-3d-card-tag"></span>
+                <dl class="matrix-3d-card-details"></dl>
+              </div>
             </div>
-            <div class="matrix-3d-ui matrix-3d-legend">
-              <div><i class="utama"></i><span><b>Prioritas Utama</b><small>Feasibility tinggi · Impact tinggi</small></span></div>
-              <div><i class="potensi"></i><span><b>Potensi</b><small>Feasibility rendah · Impact tinggi</small></span></div>
-              <div><i class="pertimbangkan"></i><span><b>Pertimbangkan</b><small>Feasibility tinggi · Impact rendah</small></span></div>
-              <div><i class="tunda"></i><span><b>Tunda</b><small>Feasibility rendah · Impact rendah</small></span></div>
-            </div>
-            <div class="matrix-3d-ui matrix-3d-hint" aria-live="polite">
-              <span class="matrix-3d-hint-idle"><b>KLIK MATRIKS</b> untuk aktifkan kontrol <i></i>Scroll halaman tetap normal</span>
-              <span class="matrix-3d-hint-active"><b>DRAG</b> putar <i></i><b>SCROLL</b> zoom <i></i>Klik di luar untuk scroll halaman</span>
-            </div>
-            <button type="button" class="matrix-3d-reset"><i class="bi bi-arrow-counterclockwise"></i> Reset view</button>
-            <div class="matrix-3d-tooltip"></div>
-            <div class="matrix-3d-card">
-              <button type="button" class="matrix-3d-close" aria-label="Tutup detail">×</button>
-              <span class="matrix-card-kicker">IDE DETAIL</span>
-              <h2 class="matrix-3d-card-name"></h2>
-              <span class="matrix-3d-card-tag"></span>
-              <dl class="matrix-3d-card-details"></dl>
+            <div class="matrix-3d-footer">
+              <div class="matrix-3d-legend">
+                <div><i class="utama"></i><span><b>Prioritas Utama</b><small>Feasibility tinggi · Impact tinggi</small></span></div>
+                <div><i class="potensi"></i><span><b>Potensi</b><small>Feasibility rendah · Impact tinggi</small></span></div>
+                <div><i class="pertimbangkan"></i><span><b>Pertimbangkan</b><small>Feasibility tinggi · Impact rendah</small></span></div>
+                <div><i class="tunda"></i><span><b>Tunda</b><small>Feasibility rendah · Impact rendah</small></span></div>
+              </div>
+              <div class="matrix-3d-hint" aria-live="polite">
+                <span class="matrix-3d-hint-idle"><b>KLIK MATRIKS</b> untuk aktifkan kontrol <i></i>Scroll halaman tetap normal</span>
+                <span class="matrix-3d-hint-active"><b>DRAG</b> putar <i></i><b>SCROLL</b> zoom <i></i>Klik di luar untuk scroll halaman</span>
+              </div>
             </div>
           </div>
         </div>
