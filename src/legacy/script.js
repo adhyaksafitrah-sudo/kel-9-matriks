@@ -1245,6 +1245,7 @@ function showPage(name) {
   if (name !== 'matriks') disposeMatrix3D();
   currentPage = name;
   document.body.classList.toggle('dashboard-theme', name === 'dashboard');
+  document.body.classList.toggle('table-page-theme', name === 'data');
 
   document.querySelectorAll('.page').forEach(function (el) {
     el.classList.toggle('d-none', el.id !== 'page-' + name);

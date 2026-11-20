@@ -1090,8 +1090,9 @@ body:not(.dark-mode) .dashboard-text-button:hover { color: #117986; }
   box-shadow: none;
 }
 .brand {
-  min-height: 76px;
-  padding: 18px 20px;
+  height: 72px;
+  min-height: 72px;
+  padding: 0 20px;
   border-bottom-color: #edf0f3;
 }
 .brand-icon {
@@ -1149,8 +1150,9 @@ body:not(.dark-mode) .dashboard-text-button:hover { color: #117986; }
 .team-details span { color: #7b8793; font-size: 9px; }
 .main { background: #f6f7f8; }
 .topbar {
-  min-height: 64px;
-  padding: 12px 30px;
+  height: 72px;
+  min-height: 72px;
+  padding: 0 30px;
   border-bottom-color: #e6eaee;
   background: rgba(255,255,255,.96);
   box-shadow: none;
@@ -1512,13 +1514,13 @@ body.dark-mode .modal-footer { border-color: #2b3741; }
 body.dark-mode .modal .btn-close { filter: invert(1) grayscale(1); }
 body.dark-mode .modal .btn-light { border-color: #3a4853; background: #26343f; color: #dce4eb; }
 @media (max-width: 991.98px) {
-  .topbar { min-height: 60px; padding: 11px 18px; }
+  .topbar { padding-right: 18px; padding-left: 18px; }
   .content,
   .dashboard-theme .content,
   body.dark-mode:not(.dashboard-theme) .content { padding: 22px 20px 34px; }
 }
 @media (max-width: 575.98px) {
-  .topbar { min-height: 56px; padding: 9px 12px; }
+  .topbar { padding-right: 12px; padding-left: 12px; }
   .page-title { font-size: 15px; }
   .content,
   .dashboard-theme .content,
@@ -1696,6 +1698,73 @@ body.dark-mode #page-prioritas #priorityContent .priority-tie-panel .panel-title
   .dashboard-line-chart { height: clamp(100px, 20vh, 140px); }
   .dashboard-donut-wrap { height: clamp(86px, 15vh, 110px); }
   .dashboard-legend { gap: 3px; padding-top: 2px; }
+}
+
+body.table-page-theme {
+  height: 100vh;
+  overflow: hidden;
+}
+body.table-page-theme .main {
+  display: flex;
+  height: 100vh;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+}
+body.table-page-theme .topbar { flex: 0 0 auto; }
+body.table-page-theme .content,
+body.dark-mode.table-page-theme .content {
+  display: flex;
+  height: 0;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 24px 32px;
+}
+body.table-page-theme #page-data {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+body.table-page-theme #page-data .page-heading { flex: 0 0 auto; }
+body.table-page-theme #page-data > .panel {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  overflow: hidden;
+}
+body.table-page-theme #page-data .toolbar { flex: 0 0 auto; }
+body.table-page-theme #page-data .table-responsive {
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow: auto;
+}
+body.table-page-theme #page-data .data-table { margin-bottom: 0; }
+body.table-page-theme #page-data .data-table thead th {
+  position: sticky;
+  z-index: 20;
+  top: 0;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f7f8fa;
+  color: #475569;
+  box-shadow: 0 2px 4px rgba(15, 23, 42, .08);
+}
+body.dark-mode.table-page-theme #page-data .data-table thead th {
+  border-bottom-color: #334155;
+  background: #1e293b;
+  color: #dbeafe;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .24);
+}
+@media (max-width: 991.98px) {
+  body.table-page-theme .content,
+  body.dark-mode.table-page-theme .content { padding: 18px 20px; }
+}
+@media (max-width: 575.98px) {
+  body.table-page-theme .content,
+  body.dark-mode.table-page-theme .content { padding: 14px 13px; }
 }
 
 /* ---------------- Cetak / PDF ---------------- */
