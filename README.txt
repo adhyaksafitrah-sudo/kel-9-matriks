@@ -10,9 +10,11 @@ Feasibility vs Impact, menghitung Total Score, mengelompokkan ide ke
 4 kuadran, menampilkan grafik, dan memilih ide terbaik.
 
 Teknologi: React, TypeScript, CSS, Bootstrap, JavaScript, Chart.js,
-Three.js, OrbitControls, Vite, dan LocalStorage. Entry point React
+Three.js, OrbitControls, Vite, Express, SQLite, dan LocalStorage untuk
+preferensi tema. Entry point React
 menggunakan TypeScript; logika interaksi yang sudah ada dipertahankan
-di modul JavaScript dalam src/legacy. Tanpa login dan database.
+di modul JavaScript dalam src/legacy. Data ide disimpan di database
+SQLite lokal tanpa login.
 
 =====================================================
 STRUKTUR FILE
@@ -26,8 +28,14 @@ IDE-PRIORITY/
     index.css            -> gaya aplikasi
     assets/app-shell.html -> markup halaman
     legacy/
-      script.js          -> interaksi, perhitungan, grafik, LocalStorage
+      script.js          -> interaksi, perhitungan, grafik, dan API data
       matriks-3d.js      -> visualisasi 3D dan OrbitControls
+  server/
+    index.cjs            -> API Express dan database SQLite
+  scripts/
+    dev.cjs              -> menjalankan API dan Vite bersama-sama
+  data/
+    ide-priority.sqlite  -> database lokal (dibuat saat pertama dijalankan)
   vite.config.ts         -> konfigurasi Vite dan plugin React
   tsconfig*.json         -> konfigurasi TypeScript
   package.json       -> dependensi dan perintah npm
@@ -37,7 +45,7 @@ IDE-PRIORITY/
 =====================================================
 CARA MENJALANKAN
 =====================================================
-Persyaratan: Node.js dan npm. Jalankan perintah berikut dari folder
+Persyaratan: Node.js 20 atau lebih baru dan npm. Jalankan perintah berikut dari folder
 IDE-PRIORITY:
 
   1. npm ci
@@ -80,9 +88,14 @@ Laporan          : laporan lengkap + tombol Print Report (bisa dicetak
 =====================================================
 CATATAN PENYIMPANAN DATA
 =====================================================
-- Data disimpan di LocalStorage browser, jadi tetap ada setelah
-  halaman di-refresh.
-- Data hanya ada di browser dan komputer yang dipakai.
+- Data ide disimpan di SQLite lokal pada file data/ide-priority.sqlite,
+  jadi tetap ada setelah halaman atau server dimulai ulang.
+- Saat pertama kali dibuka, aplikasi mengimpor data ide lama dari
+  LocalStorage jika ada dan database masih kosong. Setelah berhasil,
+  data ide lama di browser dihapus.
+- Database berjalan di komputer yang menjalankan npm run dev dan tidak
+  otomatis dibagikan ke perangkat lain.
+- Preferensi tema masih disimpan di LocalStorage browser.
 - Tombol "Reset Data" (halaman Data Ide) mengembalikan 10 ide awal
   dari LKPD 5 setelah ada konfirmasi.
 

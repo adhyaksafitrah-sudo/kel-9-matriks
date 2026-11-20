@@ -4,7 +4,7 @@
 
    Isi file ini (urutan dari atas ke bawah):
    1. Data awal & aturan kuadran
-   2. LocalStorage (simpan / muat data)
+   2. Database (simpan / muat data)
    3. Fungsi bantu (hitung skor, urutkan, dll.)
    4. Chart.js (plugin kuadran, matriks, grafik batang)
    5. Menampilkan setiap halaman
@@ -19,22 +19,8 @@ import { mountMatrix3D } from './matriks-3d.js';
    1. DATA AWAL & ATURAN KUADRAN
    --------------------------------------------------------- */
 
-const STORAGE_KEY = 'idePriorityKelompok9';
+const LEGACY_STORAGE_KEY = 'idePriorityKelompok9';
 const THEME_STORAGE_KEY = 'idePriorityTheme';
-
-// Data awal dari LKPD 5 (jangan diubah)
-const INITIAL_IDEAS = [
-  { id: '1',  name: 'Fit Assistant & Size Recommendation AI',        feas: 4, impact: 5 },
-  { id: '2',  name: 'Express 1-Click Buy & Instant Escrow Checkout', feas: 5, impact: 5 },
-  { id: '3',  name: 'Consolidated Shipping & Flat Rate Ongkir',      feas: 4, impact: 5 },
-  { id: '4',  name: 'Real-Time Inventory & Size Sync System',        feas: 4, impact: 4 },
-  { id: '5',  name: 'Sistem Pre-order Berbasis Kuota',               feas: 3, impact: 4 },
-  { id: '6',  name: '24/7 Contextual Chatbot CS',                    feas: 4, impact: 4 },
-  { id: '7',  name: 'Virtual Try-On 3D Augmented Reality',           feas: 2, impact: 5 },
-  { id: '8',  name: 'Video Review Reels',                            feas: 3, impact: 4 },
-  { id: '9',  name: 'Gamified Cashback & Reviewer Poin',             feas: 4, impact: 3 },
-  { id: '10', name: 'Smart Price Negotiation Bot',                   feas: 3, impact: 2 }
-];
 
 // Informasi tiap kuadran (warna, aturan, posisi)
 const QUADRANTS = {
@@ -75,18 +61,13 @@ const BAR_TOP = '#1d7a43';      // warna batang skor tertinggi
 const FONT = "Inter, 'Segoe UI', system-ui, sans-serif";
 
 /* ---------------------------------------------------------
-   2. LOCALSTORAGE
+   2. DATABASE
    --------------------------------------------------------- */
-
-function cloneInitial() {
-  return INITIAL_IDEAS.map(function (item) { return Object.assign({}, item); });
-}
 
 function isScore(value) {
   return Number.isInteger(value) && value >= 1 && value <= 5;
 }
 
-// Cek apakah data dari LocalStorage bentuknya benar
 function isValidList(list) {
   return Array.isArray(list) && list.every(function (item) {
     return item && item.id != null &&
@@ -95,31 +76,54 @@ function isValidList(list) {
   });
 }
 
-function persist(list) {
+async function apiRequest(path, options) {
+  const response = await fetch(path, Object.assign({
+    headers: { 'Content-Type': 'application/json' }
+  }, options || {}));
+  if (response.status === 204) return null;
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.error || 'Permintaan ke database gagal.');
+  return result;
+}
+
+function removeLegacyData() {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    localStorage.removeItem(LEGACY_STORAGE_KEY);
   } catch (err) {
-    console.warn('Data tidak bisa disimpan ke LocalStorage:', err);
+    console.warn('Data ide lama sudah tersimpan di database, tetapi salinan LocalStorage tidak dapat dihapus:', err);
   }
 }
 
-// Kunjungan pertama: simpan 10 ide awal. Berikutnya: muat data yang tersimpan.
-function loadIdeas() {
+async function loadIdeas() {
+  let legacyIdeas = null;
+  let hasLegacyData = false;
+
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw === null) {
-      const fresh = cloneInitial();
-      persist(fresh);
-      return fresh;
+    const raw = localStorage.getItem(LEGACY_STORAGE_KEY);
+    if (raw !== null) {
+      hasLegacyData = true;
+      const parsed = JSON.parse(raw);
+      if (isValidList(parsed)) {
+        legacyIdeas = parsed;
+      } else {
+        console.warn('Data ide lama tidak valid dan tidak akan diimpor ke database.');
+      }
     }
-    const parsed = JSON.parse(raw);
-    if (isValidList(parsed)) return parsed;
   } catch (err) {
-    console.warn('Data LocalStorage rusak, memakai data awal.', err);
+    console.warn('Data ide lama tidak dapat dibaca untuk migrasi:', err);
   }
-  const fallback = cloneInitial();
-  persist(fallback);
-  return fallback;
+
+  const loaded = await apiRequest('/api/ideas/bootstrap', {
+    method: 'POST',
+    body: JSON.stringify({ legacyIdeas: legacyIdeas })
+  });
+  if (!isValidList(loaded)) throw new Error('Respons database berisi daftar ide yang tidak valid.');
+  if (hasLegacyData) removeLegacyData();
+  return loaded;
+}
+
+function reportDataError(action, error) {
+  console.error('Gagal ' + action + ' data ide di database:', error);
 }
 
 /* ---------------------------------------------------------
@@ -1181,23 +1185,35 @@ function handleFormChange() {
   if (hasAttemptedSubmit) validateForm();
 }
 
-function handleSubmit(event) {
+async function handleSubmit(event) {
   event.preventDefault();
   hasAttemptedSubmit = true;
   const result = validateForm();
   if (!result.valid) return;   // data tidak valid: jangan disimpan
 
   const id = $('ideaId').value;
-  if (id) {
-    const item = ideas.find(function (x) { return x.id === id; });
-    if (item) { item.name = result.name; item.feas = result.feas; item.impact = result.impact; }
-  } else {
-    ideas.push({ id: newId(), name: result.name, feas: result.feas, impact: result.impact });
-  }
+  const values = {
+    id: id || newId(),
+    name: result.name,
+    feas: result.feas,
+    impact: result.impact
+  };
 
-  persist(ideas);
-  ideaModal.hide();
-  renderPage(currentPage);
+  try {
+    const saved = await apiRequest(id ? '/api/ideas/' + encodeURIComponent(id) : '/api/ideas', {
+      method: id ? 'PUT' : 'POST',
+      body: JSON.stringify(values)
+    });
+    if (id) {
+      ideas = ideas.map(function (item) { return item.id === id ? saved : item; });
+    } else {
+      ideas.push(saved);
+    }
+    ideaModal.hide();
+    renderPage(currentPage);
+  } catch (err) {
+    reportDataError('menyimpan', err);
+  }
 }
 
 function askConfirm(title, text, okLabel, callback) {
@@ -1211,19 +1227,28 @@ function askConfirm(title, text, okLabel, callback) {
 function deleteIdea(id) {
   const item = ideas.find(function (x) { return x.id === id; });
   if (!item) return;
-  askConfirm('Hapus Ide', 'Hapus ide "' + item.name + '"?', 'Ya, Hapus', function () {
-    ideas = ideas.filter(function (x) { return x.id !== id; });
-    persist(ideas);
-    renderPage(currentPage);
+  askConfirm('Hapus Ide', 'Hapus ide "' + item.name + '"?', 'Ya, Hapus', async function () {
+    try {
+      await apiRequest('/api/ideas/' + encodeURIComponent(id), { method: 'DELETE' });
+      ideas = ideas.filter(function (x) { return x.id !== id; });
+      renderPage(currentPage);
+    } catch (err) {
+      reportDataError('menghapus', err);
+    }
   });
 }
 
 function resetData() {
-  askConfirm('Reset Data', 'Semua perubahan akan dihapus dan data kembali ke 10 ide awal (LKPD 5). Lanjutkan?', 'Ya, Reset', function () {
-    ideas = cloneInitial();
-    persist(ideas);
-    $('searchInput').value = '';
-    renderPage(currentPage);
+  askConfirm('Reset Data', 'Semua perubahan akan dihapus dan data kembali ke 10 ide awal (LKPD 5). Lanjutkan?', 'Ya, Reset', async function () {
+    try {
+      const resetIdeas = await apiRequest('/api/ideas/reset', { method: 'POST' });
+      if (!isValidList(resetIdeas)) throw new Error('Respons reset database berisi daftar ide yang tidak valid.');
+      ideas = resetIdeas;
+      $('searchInput').value = '';
+      renderPage(currentPage);
+    } catch (err) {
+      reportDataError('mereset', err);
+    }
   });
 }
 
@@ -1262,8 +1287,9 @@ function resizeChartsForPrint() {
   });
 }
 
-function init() {
-  ideas = loadIdeas();
+async function init(isMounted) {
+  ideas = await loadIdeas();
+  if (!isMounted()) return;
   window.addEventListener('beforeunload', disposeMatrix3D);
 
   if (typeof Chart !== 'undefined') {
@@ -1321,7 +1347,9 @@ function init() {
     if (confirmCallback) {
       const run = confirmCallback;
       confirmCallback = null;
-      run();
+      Promise.resolve().then(run).catch(function (err) {
+        reportDataError('memperbarui', err);
+      });
     }
   });
 
@@ -1336,8 +1364,12 @@ function init() {
 }
 
 export function mountLegacyApp() {
-  init();
+  let mounted = true;
+  init(function () { return mounted; }).catch(function (err) {
+    if (mounted) reportDataError('memuat', err);
+  });
   return function unmountLegacyApp() {
+    mounted = false;
     window.removeEventListener('beforeunload', disposeMatrix3D);
     window.removeEventListener('beforeprint', resizeChartsForPrint);
     window.removeEventListener('afterprint', resizeChartsForPrint);
