@@ -3,8 +3,8 @@
     <div class="brand">
       <div class="brand-icon"><i class="bi bi-grid-1x2-fill"></i></div>
       <div>
-        <div class="brand-name">IDE PRIORITY</div>
-        <div class="brand-sub">Riset Ide, Pilih yang Terbaik</div>
+        <div class="brand-name">PETA IDE</div>
+        <div class="brand-sub">Nilai · Petakan · Prioritaskan</div>
       </div>
     </div>
 
@@ -18,9 +18,12 @@
     </nav>
 
     <div class="sidebar-footer">
-      <div><strong>Kelompok 9</strong></div>
-      <div>Kelas XI PPLG 2</div>
-      <div>Semester Ganjil 2026–2027</div>
+      <div class="team-mark" aria-hidden="true">K9</div>
+      <div class="team-details">
+        <strong>Kelompok 9</strong>
+        <span>Kelas XI PPLG 2</span>
+        <span>Semester Ganjil 2026–2027</span>
+      </div>
     </div>
   </aside>
 
@@ -45,7 +48,7 @@
       <section class="page dashboard-page" id="page-dashboard">
         <div class="dashboard-heading">
           <div>
-            <span class="dashboard-eyebrow">IDE PRIORITY <span> / </span> OVERVIEW</span>
+            <span class="dashboard-eyebrow">PETA IDE <span> / </span> OVERVIEW</span>
             <h2>Dashboard Analitik</h2>
             <p id="dashSummary"></p>
           </div>
@@ -56,7 +59,7 @@
 
         <div class="dashboard-stats" id="summaryCards"></div>
 
-        <div class="row g-3 dashboard-row">
+        <div class="row dashboard-overview-row">
           <div class="col-12 col-xl-8">
             <section class="panel dashboard-panel h-100">
               <div class="dashboard-panel-heading">
@@ -85,45 +88,12 @@
             </section>
           </div>
         </div>
-
-        <div class="row g-3 dashboard-row">
-          <div class="col-12 col-xl-8">
-            <section class="panel dashboard-panel h-100">
-              <div class="dashboard-panel-heading">
-                <div>
-                  <div class="panel-title">Ide dengan Skor Tertinggi</div>
-                  <p>Urutan ide berdasarkan total nilai</p>
-                </div>
-                <button type="button" class="dashboard-text-button" data-dashboard-page="data">Lihat semua <i class="bi bi-arrow-right"></i></button>
-              </div>
-              <div class="table-responsive dashboard-table-wrap">
-                <table class="table dashboard-table align-middle mb-0">
-                  <thead>
-                    <tr><th>IDE</th><th>KUADRAN</th><th class="text-end">SKOR TOTAL</th></tr>
-                  </thead>
-                  <tbody id="dashIdeasTable"></tbody>
-                </table>
-              </div>
-            </section>
-          </div>
-          <div class="col-12 col-xl-4">
-            <section class="panel dashboard-panel h-100">
-              <div class="dashboard-panel-heading">
-                <div>
-                  <div class="panel-title">Perbandingan Skor</div>
-                  <p>Lima ide dengan nilai tertinggi</p>
-                </div>
-              </div>
-              <div class="chart-box dashboard-priority-chart"><canvas id="chartPriority"></canvas></div>
-            </section>
-          </div>
-        </div>
       </section>
 
       <!-- ================= 2. DATA IDE ================= -->
       <section class="page d-none" id="page-data">
         <div class="page-heading">
-          <span class="page-eyebrow">IDE PRIORITY <span>/</span> DATA</span>
+          <span class="page-eyebrow">PETA IDE <span>/</span> DATA</span>
           <h2>Kelola Data Ide</h2>
           <p>Atur, cari, dan evaluasi semua ide dalam satu tempat.</p>
         </div>
@@ -161,7 +131,7 @@
       <!-- ================= 3. MATRIKS KUADRAN ================= -->
       <section class="page d-none" id="page-matriks">
         <div class="page-heading matrix-page-heading">
-          <span class="page-eyebrow">IDE PRIORITY <span>/</span> DECISION LAB</span>
+          <span class="page-eyebrow">PETA IDE <span>/</span> DECISION LAB</span>
           <h2>Matriks Strategi 3D</h2>
           <p>Lihat hubungan kelayakan, dampak, dan total skor dalam satu ruang interaktif.</p>
         </div>
@@ -215,7 +185,7 @@
       <!-- ================= 4. GRAFIK TOTAL SCORE ================= -->
       <section class="page d-none" id="page-grafik">
         <div class="page-heading">
-          <span class="page-eyebrow">IDE PRIORITY <span>/</span> ANALISIS</span>
+          <span class="page-eyebrow">PETA IDE <span>/</span> ANALISIS</span>
           <h2>Grafik Skor</h2>
           <p>Bandingkan skor setiap ide untuk melihat peluang terbaik.</p>
         </div>
@@ -229,9 +199,41 @@
       <!-- ================= 5. IDE PRIORITAS ================= -->
       <section class="page d-none" id="page-prioritas">
         <div class="page-heading">
-          <span class="page-eyebrow">IDE PRIORITY <span>/</span> HASIL</span>
+          <span class="page-eyebrow">PETA IDE <span>/</span> HASIL</span>
           <h2>Ide Prioritas</h2>
           <p>Kenali ide dengan nilai tertinggi dan alasan pemilihannya.</p>
+        </div>
+        <div class="row g-3 priority-score-panels">
+          <div class="col-12 col-xl-6">
+            <section class="panel dashboard-panel priority-top-ideas-panel">
+              <div class="dashboard-panel-heading">
+                <div>
+                  <div class="panel-title">Ide dengan Skor Tertinggi</div>
+                  <p>Urutan ide berdasarkan total nilai</p>
+                </div>
+                <button type="button" class="dashboard-text-button" data-dashboard-page="data">Lihat semua <i class="bi bi-arrow-right"></i></button>
+              </div>
+              <div class="table-responsive dashboard-table-wrap">
+                <table class="table dashboard-table align-middle mb-0">
+                  <thead>
+                    <tr><th>IDE</th><th>KUADRAN</th><th class="text-end">SKOR TOTAL</th></tr>
+                  </thead>
+                  <tbody id="dashIdeasTable"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+          <div class="col-12 col-xl-6">
+            <section class="panel dashboard-panel">
+              <div class="dashboard-panel-heading">
+                <div>
+                  <div class="panel-title">Perbandingan Skor</div>
+                  <p>Lima ide dengan nilai tertinggi</p>
+                </div>
+              </div>
+              <div class="chart-box dashboard-priority-chart"><canvas id="chartPriority"></canvas></div>
+            </section>
+          </div>
         </div>
         <div id="priorityContent"></div>
       </section>
@@ -239,7 +241,7 @@
       <!-- ================= 6. LAPORAN ================= -->
       <section class="page d-none" id="page-laporan">
         <div class="page-heading">
-          <span class="page-eyebrow">IDE PRIORITY <span>/</span> DOKUMEN</span>
+          <span class="page-eyebrow">PETA IDE <span>/</span> DOKUMEN</span>
           <h2>Laporan Evaluasi</h2>
           <p>Ringkasan hasil evaluasi ide yang siap dicetak atau disimpan.</p>
         </div>
@@ -249,8 +251,8 @@
 
         <div class="report" id="reportArea">
           <div class="report-head">
-            <h2>Laporan Evaluasi Ide — IDE PRIORITY</h2>
-            <div class="report-sub">Riset Ide, Pilih yang Terbaik</div>
+            <h2>Laporan Evaluasi Ide — PETA IDE</h2>
+            <div class="report-sub">Nilai · Petakan · Prioritaskan</div>
             <div class="report-meta">
               Kelompok 9 &middot; Kelas XI PPLG 2 &middot; Semester Ganjil 2026–2027<br>
               Mata Pelajaran: Kreativitas, Inovasi, dan Kewirausahaan
