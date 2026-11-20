@@ -1634,6 +1634,38 @@ body.dark-mode.dashboard-theme .content { padding: clamp(10px, 2vh, 20px) clamp(
 .dashboard-legend { gap: 7px 8px; padding-top: 5px; }
 .dashboard-table tbody td { padding-top: 7px; padding-bottom: 7px; }
 .priority-score-panels { margin-bottom: 20px; }
+#page-prioritas .priority-score-panels > div { display: flex; }
+#page-prioritas .priority-score-panels .dashboard-panel {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex-direction: column;
+}
+#page-prioritas .priority-top-ideas-panel .dashboard-panel-heading {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e7ece9;
+  margin-bottom: 12px;
+}
+#page-prioritas .priority-score-panels .dashboard-priority-chart {
+  height: auto;
+  min-height: 210px;
+  flex: 1 1 auto;
+}
+#page-prioritas #priorityContent .priority-tie-panel {
+  border-left: 4px solid #66866e;
+  background: #f5f8f4;
+}
+#page-prioritas #priorityContent .priority-tie-panel .panel-title {
+  color: #4f6b57;
+}
+#page-prioritas #priorityContent .priority-tie-panel .panel-title i { margin-right: 5px; }
+body.dark-mode #page-prioritas .priority-top-ideas-panel .dashboard-panel-heading { border-color: #34414c; }
+body.dark-mode #page-prioritas #priorityContent .priority-tie-panel {
+  border-color: #3a5142;
+  border-left-color: #89ad91;
+  background: #1e2d27;
+}
+body.dark-mode #page-prioritas #priorityContent .priority-tie-panel .panel-title { color: #c7d9bb; }
 
 @media (max-width: 991.98px) {
   .dashboard-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }

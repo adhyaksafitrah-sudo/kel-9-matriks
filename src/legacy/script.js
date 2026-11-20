@@ -1030,7 +1030,7 @@ function renderPriority() {
   }
 
   box.innerHTML =
-    '<div class="panel mb-3"><div class="panel-title">Hasil Seri</div>' +
+    '<div class="panel mb-3 priority-tie-panel"><div class="panel-title"><i class="bi bi-people-fill" aria-hidden="true"></i> Hasil Seri</div>' +
       '<p class="mb-0">Ada <strong>' + tops.length + ' ide</strong> dengan Total Score tertinggi yang sama, yaitu <strong>' +
       tops[0].total + '/10</strong>. Karena skornya seri, semua ide tersebut ditampilkan di bawah ini.</p></div>' +
     tops.map(function (t) {
