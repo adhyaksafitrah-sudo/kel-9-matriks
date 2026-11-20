@@ -52,7 +52,15 @@ export function mountMatrix3D(container, ideas) {
   const cardTag = container.querySelector('.matrix-3d-card-tag');
   const cardDetails = container.querySelector('.matrix-3d-card-details');
   const closeCard = container.querySelector('.matrix-3d-close');
+  const hint = container.querySelector('.matrix-3d-hint');
   const ranked = ideas.slice().sort(function (a, b) { return b.s - a.s; });
+  const topScore = ideas.reduce(function (highest, idea) { return Math.max(highest, idea.s); }, 0);
+  const averageScore = ideas.length
+    ? ideas.reduce(function (total, idea) { return total + idea.s; }, 0) / ideas.length
+    : 0;
+  container.querySelector('#matrixIdeaCount').textContent = String(ideas.length);
+  container.querySelector('#matrixTopScore').textContent = String(topScore / 10) + '/10';
+  container.querySelector('#matrixAverageScore').textContent = (averageScore / 10).toFixed(1) + '/10';
   const resources = new Set();
   const track = function (resource) {
     if (resource && typeof resource.dispose === 'function') resources.add(resource);
@@ -87,8 +95,12 @@ export function mountMatrix3D(container, ideas) {
   };
   const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.15;
 
   const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x080f20);
   scene.fog = new THREE.Fog(0x0a1020, 28, 60);
   const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 200);
   const home = {
@@ -103,17 +115,19 @@ export function mountMatrix3D(container, ideas) {
   controls.dampingFactor = 0.07;
   controls.minDistance = 6;
   controls.maxDistance = 45;
-  controls.autoRotate = true;
-  controls.autoRotateSpeed = 0.5;
+  controls.enabled = false;
+  controls.autoRotate = false;
+  controls.autoRotateSpeed = 0.18;
+  controls.maxPolarAngle = Math.PI * 0.48;
   const onControlStart = function () { controls.autoRotate = false; };
   controls.addEventListener('start', onControlStart);
 
-  scene.add(new THREE.AmbientLight(0x6f8cc8, 0.55));
-  const directionalLight = new THREE.DirectionalLight(0xbfd8ff, 0.9);
-  directionalLight.position.set(10, 18, 8);
+  scene.add(new THREE.HemisphereLight(0x8dbbff, 0x101a30, 0.9));
+  const directionalLight = new THREE.DirectionalLight(0xd7e9ff, 1.45);
+  directionalLight.position.set(8, 16, 11);
   scene.add(directionalLight);
-  const pointLight = new THREE.PointLight(0x22e5ff, 0.6, 40);
-  pointLight.position.set(5, 10, 5);
+  const pointLight = new THREE.PointLight(0x22d3ee, 1.1, 34);
+  pointLight.position.set(4, 9, 8);
   scene.add(pointLight);
 
   function label(text, options) {
@@ -127,6 +141,12 @@ export function mountMatrix3D(container, ideas) {
     context.font = config.weight + ' ' + config.font + 'px system-ui, sans-serif';
     context.fillStyle = config.color;
     context.textBaseline = 'middle';
+    context.lineJoin = 'round';
+    context.lineWidth = Math.max(3, config.font / 8);
+    context.strokeStyle = 'rgba(5, 11, 24, .88)';
+    context.strokeText(text, 8, labelCanvas.height / 2 + 2);
+    context.shadowColor = config.color;
+    context.shadowBlur = config.size < 0.6 ? 0 : 7;
     context.fillText(text, 8, labelCanvas.height / 2 + 2);
 
     const texture = track(new THREE.CanvasTexture(labelCanvas));
@@ -144,7 +164,7 @@ export function mountMatrix3D(container, ideas) {
   }
 
   const gridColor = 0x3a5a96;
-  const minorGridColor = 0x1d3157;
+  const minorGridColor = 0x263957;
   const addGrid = function (rotationX, rotationZ, position) {
     const grid = new THREE.GridHelper(10, 10, gridColor, minorGridColor);
     grid.rotation.x = rotationX;
@@ -157,6 +177,22 @@ export function mountMatrix3D(container, ideas) {
   addGrid(0, 0, [5, 0, 5]);
   addGrid(Math.PI / 2, 0, [5, 5, 0]);
   addGrid(0, Math.PI / 2, [0, 5, 5]);
+
+  const starPositions = [];
+  for (let star = 0; star < 180; star += 1) {
+    starPositions.push(
+      (Math.random() - 0.5) * 34,
+      2 + Math.random() * 18,
+      (Math.random() - 0.5) * 34
+    );
+  }
+  const starGeometry = new THREE.BufferGeometry();
+  starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starPositions, 3));
+  const stars = new THREE.Points(
+    starGeometry,
+    new THREE.PointsMaterial({ color: 0x8eaed8, size: 0.035, transparent: true, opacity: 0.45, sizeAttenuation: true })
+  );
+  scene.add(stars);
 
   const addQuadrant = function (x, z, width, depth, color, opacity) {
     const plane = new THREE.Mesh(
@@ -178,13 +214,13 @@ export function mountMatrix3D(container, ideas) {
   addQuadrant(QUADRANT_SPLIT, 0, 10 - QUADRANT_SPLIT, QUADRANT_SPLIT, QUADRANT_COLORS.pertimbangkan, 0.1);
   addQuadrant(0, 0, QUADRANT_SPLIT, QUADRANT_SPLIT, QUADRANT_COLORS.tunda, 0.1);
   [
-    [(QUADRANT_SPLIT + 10) / 2, (QUADRANT_SPLIT + 10) / 2, 'Prioritas Utama', '#2e9e5b'],
-    [QUADRANT_SPLIT / 2, (QUADRANT_SPLIT + 10) / 2, 'Potensi', '#e0a800'],
-    [(QUADRANT_SPLIT + 10) / 2, QUADRANT_SPLIT / 2, 'Pertimbangkan', '#2f80ed'],
-    [QUADRANT_SPLIT / 2, QUADRANT_SPLIT / 2, 'Tunda', '#d64545']
+    [(QUADRANT_SPLIT + 10) / 2, (QUADRANT_SPLIT + 10) / 2, 'PRIORITAS UTAMA', '#69e69a'],
+    [QUADRANT_SPLIT / 2, (QUADRANT_SPLIT + 10) / 2, 'POTENSI', '#ffe17c'],
+    [(QUADRANT_SPLIT + 10) / 2, QUADRANT_SPLIT / 2, 'PERTIMBANGKAN', '#82b9ff'],
+    [QUADRANT_SPLIT / 2, QUADRANT_SPLIT / 2, 'TUNDA', '#ff8b9b']
   ].forEach(function (item) {
-    const quadrantLabel = label(item[2], { size: 0.5, color: item[3], weight: 600 });
-    quadrantLabel.position.set(item[0], 0.03, item[1]);
+    const quadrantLabel = label(item[2], { size: 0.56, color: item[3], weight: 700, font: 36 });
+    quadrantLabel.position.set(item[0], 0.08, item[1]);
     scene.add(quadrantLabel);
   });
   const cross = new THREE.LineSegments(
@@ -226,14 +262,17 @@ export function mountMatrix3D(container, ideas) {
   addAxis([0, 0, 0], [10, 0, 0]);
   addAxis([0, 0, 0], [0, 0, 10]);
   addAxis([0, 0, 0], [0, 10, 0]);
-  for (let value = 0; value <= 10; value += 2) {
-    let axisLabel = label(value, { size: 0.42 });
+  for (let value = 0; value <= 10; value += 2.5) {
+    const sourceScore = Math.round(value / 2.5) + 1;
+    let axisLabel = label(sourceScore, { size: 0.42 });
     axisLabel.position.set(value, -0.05, 10.7);
     scene.add(axisLabel);
-    axisLabel = label(value, { size: 0.42 });
+    axisLabel = label(sourceScore, { size: 0.42 });
     axisLabel.position.set(-0.7, -0.05, value);
     scene.add(axisLabel);
-    axisLabel = label(value * 10, { size: 0.42 });
+  }
+  for (let value = 0; value <= 10; value += 2) {
+    const axisLabel = label(value, { size: 0.42 });
     axisLabel.position.set(-0.7, value, -0.05);
     scene.add(axisLabel);
   }
@@ -257,7 +296,7 @@ export function mountMatrix3D(container, ideas) {
   glowContext.fillStyle = glowGradient;
   glowContext.fillRect(0, 0, 128, 128);
   const glowTexture = track(new THREE.CanvasTexture(glowCanvas));
-  const sphereGeometry = new THREE.SphereGeometry(0.2, 32, 24);
+  const sphereGeometry = new THREE.SphereGeometry(0.19, 40, 32);
   const points = [];
   const pickables = [];
   const rings = [];
@@ -270,17 +309,17 @@ export function mountMatrix3D(container, ideas) {
     const sphere = new THREE.Mesh(sphereGeometry, new THREE.MeshStandardMaterial({
       color: quadrant.color,
       emissive: quadrant.color,
-      emissiveIntensity: 0.55,
-      roughness: 0.3,
-      metalness: 0.1
+      emissiveIntensity: idea.s >= HIGH_PRIORITY ? 0.9 : 0.45,
+      roughness: 0.2,
+      metalness: 0.22
     }));
-    const size = idea.s >= HIGH_PRIORITY ? 1.35 : 1;
+    const size = 0.85 + Math.min(Math.max(idea.s, 0), 100) / 100 * 0.55;
     sphere.scale.setScalar(size);
     const halo = new THREE.Sprite(new THREE.SpriteMaterial({
       map: glowTexture,
       color: quadrant.color,
       transparent: true,
-      opacity: idea.s >= HIGH_PRIORITY ? 0.85 : 0.5,
+      opacity: idea.s >= HIGH_PRIORITY ? 0.9 : 0.48,
       blending: THREE.AdditiveBlending,
       depthWrite: false
     }));
@@ -307,13 +346,14 @@ export function mountMatrix3D(container, ideas) {
     ring.position.y = -position.y + 0.02;
     group.add(ring);
 
-    if (idea.s >= HIGH_PRIORITY) {
+    if (ranked.indexOf(idea) < 3) {
+      const isWinner = ranked[0] === idea;
       const priorityRing = new THREE.Mesh(
-        new THREE.RingGeometry(0.3, 0.33, 48),
+        new THREE.RingGeometry(isWinner ? 0.34 : 0.29, isWinner ? 0.38 : 0.32, 56),
         new THREE.MeshBasicMaterial({
-          color: quadrant.color,
+          color: isWinner ? 0xffd166 : quadrant.color,
           transparent: true,
-          opacity: 0.6,
+          opacity: isWinner ? 0.95 : 0.62,
           side: THREE.DoubleSide
         })
       );
@@ -322,12 +362,12 @@ export function mountMatrix3D(container, ideas) {
       group.add(priorityRing);
       rings.push(priorityRing);
       const rankLabel = label('#' + (ranked.indexOf(idea) + 1), {
-        size: 0.34,
-        color: '#aef3ff',
-        weight: 600,
-        font: 36
+        size: isWinner ? 0.42 : 0.34,
+        color: isWinner ? '#ffe19a' : '#c4e6ff',
+        weight: 800,
+        font: 38
       });
-      rankLabel.position.set(0, 0.65, 0);
+      rankLabel.position.set(0, isWinner ? 0.78 : 0.68, 0);
       group.add(rankLabel);
     }
 
@@ -379,7 +419,7 @@ export function mountMatrix3D(container, ideas) {
     ]);
     projection.computeLineDistances();
     projection.visible = true;
-    const values = [idea.f, idea.i, idea.s];
+    const values = [Math.round(idea.f / 2.5) + 1, Math.round(idea.i / 2.5) + 1, idea.s / 10];
     const spots = [
       new THREE.Vector3(position.x, position.y + 0.35, 0),
       new THREE.Vector3(0, position.y + 0.35, position.z),
@@ -400,6 +440,16 @@ export function mountMatrix3D(container, ideas) {
   let selectedIndex = -1;
   let pointerDown = null;
   let focusTween = null;
+  let interactionActive = false;
+
+  function setInteractionActive(active) {
+    interactionActive = active;
+    controls.enabled = active;
+    container.classList.toggle('controls-active', active);
+    hint.setAttribute('aria-label', active
+      ? 'Kontrol aktif. Seret untuk memutar, scroll untuk zoom. Klik di luar matriks untuk kembali scroll halaman.'
+      : 'Klik matriks untuk mengaktifkan kontrol. Scroll halaman tetap normal.');
+  }
 
   function hitTest(event) {
     const bounds = canvas.getBoundingClientRect();
@@ -413,8 +463,8 @@ export function mountMatrix3D(container, ideas) {
   }
 
   function tooltipHtml(idea) {
-    return '<b>' + escapeHtml(idea.n) + '</b><small>Kelayakan ' + idea.f +
-      ' · Dampak ' + idea.i + ' · Nilai ' + idea.s + '<br>' +
+    return '<b>' + escapeHtml(idea.n) + '</b><small>Kelayakan ' + (Math.round(idea.f / 2.5) + 1) + '/5' +
+      ' · Dampak ' + (Math.round(idea.i / 2.5) + 1) + '/5 · Total Score ' + (idea.s / 10) + '/10<br>' +
       quadrantFor(idea).name + ' · ' + priorityFor(idea.s).name + '</small>';
   }
 
@@ -438,6 +488,13 @@ export function mountMatrix3D(container, ideas) {
 
   function onPointerDown(event) {
     pointerDown = [event.clientX, event.clientY];
+    setInteractionActive(true);
+  }
+
+  function onDocumentPointerDown(event) {
+    if (interactionActive && !container.contains(event.target)) {
+      setInteractionActive(false);
+    }
   }
 
   function select(index) {
@@ -454,14 +511,17 @@ export function mountMatrix3D(container, ideas) {
     cardTag.textContent = priority.name;
     cardTag.style.color = color;
     cardTag.style.borderColor = color;
-    const row = function (name, value, max) {
-      return '<dt>' + name + '</dt><dd>' + value + '</dd>' +
+    const row = function (name, value, max, displayValue) {
+      return '<dt>' + name + '</dt><dd>' + displayValue + '</dd>' +
         '<div class="matrix-3d-bar" style="grid-column:1/-1"><i style="width:' +
         value / max * 100 + '%;background:' + color + '"></i></div>';
     };
-    cardDetails.innerHTML = row('Kelayakan', idea.f, 10) +
-      row('Dampak', idea.i, 10) +
-      row('Total Nilai', idea.s, 100) +
+    const feasibility = Math.round(idea.f / 2.5) + 1;
+    const impact = Math.round(idea.i / 2.5) + 1;
+    const total = idea.s / 10;
+    cardDetails.innerHTML = row('Kelayakan', feasibility, 5, feasibility + '/5') +
+      row('Dampak', impact, 5, impact + '/5') +
+      row('Total Score', total, 10, total + '/10') +
       '<dt>Kuadran</dt><dd>' + quadrantFor(idea).name + '</dd>' +
       '<dt>Peringkat</dt><dd>#' + (ranked.indexOf(idea) + 1) + ' dari ' + ideas.length + '</dd>';
     card.classList.add('on');
@@ -496,13 +556,14 @@ export function mountMatrix3D(container, ideas) {
     if (!width || !height) return;
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
-    camera.fov = width / height < 1.4 ? 60 : 42;
+    camera.fov = width / height < 1.4 ? 74 : 42;
     camera.updateProjectionMatrix();
   }
 
   canvas.addEventListener('pointermove', onPointerMove);
   canvas.addEventListener('pointerdown', onPointerDown);
   canvas.addEventListener('pointerup', onPointerUp);
+  document.addEventListener('pointerdown', onDocumentPointerDown);
   closeCard.addEventListener('click', onCloseCard);
   reset.addEventListener('click', onReset);
   window.addEventListener('resize', resize);
@@ -552,6 +613,7 @@ export function mountMatrix3D(container, ideas) {
     canvas.removeEventListener('pointermove', onPointerMove);
     canvas.removeEventListener('pointerdown', onPointerDown);
     canvas.removeEventListener('pointerup', onPointerUp);
+    document.removeEventListener('pointerdown', onDocumentPointerDown);
     closeCard.removeEventListener('click', onCloseCard);
     reset.removeEventListener('click', onReset);
     if (resizeObserver) resizeObserver.disconnect();

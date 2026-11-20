@@ -65,7 +65,7 @@ const PAGE_TITLES = {
   dashboard: 'Dashboard',
   data: 'Data Ide',
   matriks: 'Matriks Kuadran',
-  grafik: 'Grafik Total Score',
+  grafik: 'Grafik Skor',
   prioritas: 'Ide Prioritas',
   laporan: 'Laporan'
 };
@@ -781,10 +781,10 @@ function renderDashboard() {
   $('dashIdeaCount').textContent = ideas.length;
 
   const quadrantCards = [
-    { key: 'utama', label: 'Prioritas Utama', value: c.utama, color: '#16d9c2' },
-    { key: 'potensi', label: 'Potensi', value: c.potensi, color: '#419cff' },
-    { key: 'pertimbangkan', label: 'Pertimbangkan', value: c.pertimbangkan, color: '#a66cff' },
-    { key: 'tunda', label: 'Tunda', value: c.tunda, color: '#f074a9' }
+    { key: 'utama', label: 'Prioritas Utama', value: c.utama, color: '#2e9e5b' },
+    { key: 'potensi', label: 'Potensi', value: c.potensi, color: '#e0a800' },
+    { key: 'pertimbangkan', label: 'Pertimbangkan', value: c.pertimbangkan, color: '#2f80ed' },
+    { key: 'tunda', label: 'Tunda', value: c.tunda, color: '#d64545' }
   ];
   $('dashQuadrantLegend').innerHTML = quadrantCards.map(function (item) {
     return '<div class="dashboard-legend-item"><span class="dashboard-legend-dot ' + item.key + '"></span>' +
