@@ -59,7 +59,7 @@
 
         <div class="dashboard-stats" id="summaryCards"></div>
 
-        <div class="row g-3 dashboard-row">
+        <div class="row dashboard-overview-row">
           <div class="col-12 col-xl-8">
             <section class="panel dashboard-panel h-100">
               <div class="dashboard-panel-heading">
@@ -85,39 +85,6 @@
                 <div class="dashboard-donut-center"><strong id="dashIdeaCount">0</strong><span>IDE</span></div>
               </div>
               <div class="dashboard-legend" id="dashQuadrantLegend"></div>
-            </section>
-          </div>
-        </div>
-
-        <div class="row g-3 dashboard-row">
-          <div class="col-12 col-xl-8">
-            <section class="panel dashboard-panel h-100">
-              <div class="dashboard-panel-heading">
-                <div>
-                  <div class="panel-title">Ide dengan Skor Tertinggi</div>
-                  <p>Urutan ide berdasarkan total nilai</p>
-                </div>
-                <button type="button" class="dashboard-text-button" data-dashboard-page="data">Lihat semua <i class="bi bi-arrow-right"></i></button>
-              </div>
-              <div class="table-responsive dashboard-table-wrap">
-                <table class="table dashboard-table align-middle mb-0">
-                  <thead>
-                    <tr><th>IDE</th><th>KUADRAN</th><th class="text-end">SKOR TOTAL</th></tr>
-                  </thead>
-                  <tbody id="dashIdeasTable"></tbody>
-                </table>
-              </div>
-            </section>
-          </div>
-          <div class="col-12 col-xl-4">
-            <section class="panel dashboard-panel h-100">
-              <div class="dashboard-panel-heading">
-                <div>
-                  <div class="panel-title">Perbandingan Skor</div>
-                  <p>Lima ide dengan nilai tertinggi</p>
-                </div>
-              </div>
-              <div class="chart-box dashboard-priority-chart"><canvas id="chartPriority"></canvas></div>
             </section>
           </div>
         </div>
@@ -235,6 +202,38 @@
           <span class="page-eyebrow">PETA IDE <span>/</span> HASIL</span>
           <h2>Ide Prioritas</h2>
           <p>Kenali ide dengan nilai tertinggi dan alasan pemilihannya.</p>
+        </div>
+        <div class="row g-3 priority-score-panels">
+          <div class="col-12 col-xl-8">
+            <section class="panel dashboard-panel">
+              <div class="dashboard-panel-heading">
+                <div>
+                  <div class="panel-title">Ide dengan Skor Tertinggi</div>
+                  <p>Urutan ide berdasarkan total nilai</p>
+                </div>
+                <button type="button" class="dashboard-text-button" data-dashboard-page="data">Lihat semua <i class="bi bi-arrow-right"></i></button>
+              </div>
+              <div class="table-responsive dashboard-table-wrap">
+                <table class="table dashboard-table align-middle mb-0">
+                  <thead>
+                    <tr><th>IDE</th><th>KUADRAN</th><th class="text-end">SKOR TOTAL</th></tr>
+                  </thead>
+                  <tbody id="dashIdeasTable"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+          <div class="col-12 col-xl-4">
+            <section class="panel dashboard-panel">
+              <div class="dashboard-panel-heading">
+                <div>
+                  <div class="panel-title">Perbandingan Skor</div>
+                  <p>Lima ide dengan nilai tertinggi</p>
+                </div>
+              </div>
+              <div class="chart-box dashboard-priority-chart"><canvas id="chartPriority"></canvas></div>
+            </section>
+          </div>
         </div>
         <div id="priorityContent"></div>
       </section>

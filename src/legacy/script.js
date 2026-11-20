@@ -791,13 +791,6 @@ function renderDashboard() {
       '<span>' + item.label + '</span><strong>' + item.value + '</strong></div>';
   }).join('');
 
-  $('dashIdeasTable').innerHTML = sorted.length ? sorted.slice(0, 5).map(function (item, index) {
-    return '<tr><td><div class="dashboard-idea-cell"><span class="dashboard-rank">' +
-      String(index + 1).padStart(2, '0') + '</span><span class="dashboard-idea-name">' + esc(item.name) +
-      '</span></div></td><td>' + badgeHtml(item.quad) + '</td><td class="text-end">' +
-      '<span class="dashboard-score">' + item.total + '<small> / 10</small></span></td></tr>';
-  }).join('') : '<tr><td colspan="3" class="dashboard-empty">Belum ada data ide.</td></tr>';
-
   renderChart('chartDash', {
     type: 'line',
     data: {
@@ -865,43 +858,6 @@ function renderDashboard() {
       maintainAspectRatio: false,
       cutout: '76%',
       plugins: { legend: { display: false } }
-    }
-  });
-
-  const topFive = sorted.slice(0, 5);
-  renderChart('chartPriority', {
-    type: 'bar',
-    data: {
-      labels: topFive.map(function (item) { return truncate(item.name, 22); }),
-      datasets: [{
-        data: topFive.map(function (item) { return item.total; }),
-        backgroundColor: ['#13d9ce', '#148fc7', '#386bd2', '#7155d5', '#a34ed0'],
-        borderRadius: 5,
-        barThickness: 10
-      }]
-    },
-    options: {
-      indexAxis: 'y',
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: function (item) { return ' ' + item.formattedValue + ' / 10'; } } }
-      },
-      scales: {
-        x: {
-          min: 0,
-          max: 10,
-          grid: { color: darkTheme ? 'rgba(118, 148, 193, .1)' : 'rgba(15, 36, 71, .09)' },
-          border: { display: false },
-          ticks: { color: darkTheme ? '#8298bb' : '#74829a', stepSize: 2 }
-        },
-        y: {
-          grid: { display: false },
-          border: { display: false },
-          ticks: { color: darkTheme ? '#b7c6de' : '#52637d', font: { size: 10 } }
-        }
-      }
     }
   });
 }
@@ -979,6 +935,53 @@ function renderBarPage() {
 }
 
 /* ---- Ide Prioritas ---- */
+function renderPriorityScorePanels(sorted) {
+  const darkTheme = document.body.classList.contains('dark-mode');
+  $('dashIdeasTable').innerHTML = sorted.length ? sorted.slice(0, 5).map(function (item, index) {
+    return '<tr><td><div class="dashboard-idea-cell"><span class="dashboard-rank">' +
+      String(index + 1).padStart(2, '0') + '</span><span class="dashboard-idea-name">' + esc(item.name) +
+      '</span></div></td><td>' + badgeHtml(item.quad) + '</td><td class="text-end">' +
+      '<span class="dashboard-score">' + item.total + '<small> / 10</small></span></td></tr>';
+  }).join('') : '<tr><td colspan="3" class="dashboard-empty">Belum ada data ide.</td></tr>';
+
+  const topFive = sorted.slice(0, 5);
+  renderChart('chartPriority', {
+    type: 'bar',
+    data: {
+      labels: topFive.map(function (item) { return truncate(item.name, 22); }),
+      datasets: [{
+        data: topFive.map(function (item) { return item.total; }),
+        backgroundColor: ['#13d9ce', '#148fc7', '#386bd2', '#7155d5', '#a34ed0'],
+        borderRadius: 5,
+        barThickness: 10
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: function (item) { return ' ' + item.formattedValue + ' / 10'; } } }
+      },
+      scales: {
+        x: {
+          min: 0,
+          max: 10,
+          grid: { color: darkTheme ? 'rgba(118, 148, 193, .1)' : 'rgba(15, 36, 71, .09)' },
+          border: { display: false },
+          ticks: { color: darkTheme ? '#8298bb' : '#74829a', stepSize: 2 }
+        },
+        y: {
+          grid: { display: false },
+          border: { display: false },
+          ticks: { color: darkTheme ? '#b7c6de' : '#52637d', font: { size: 10 } }
+        }
+      }
+    }
+  });
+}
+
 function quadrantExplanation(quadKey) {
   if (quadKey === 'utama') {
     return 'Karena Feasibility dan Impact sama-sama berkategori High, ide ini masuk kuadran Prioritas Utama: mudah direalisasikan dan berdampak besar, sehingga paling tepat dikembangkan lebih lanjut.';
@@ -995,6 +998,7 @@ function quadrantExplanation(quadKey) {
 function renderPriority() {
   const tops = getTopIdeas();
   const box = $('priorityContent');
+  renderPriorityScorePanels(getSorted());
 
   if (!tops.length) {
     box.innerHTML = '<div class="panel"><p class="mb-0 text-muted">Belum ada data ide, sehingga ide prioritas belum bisa ditentukan.</p></div>';

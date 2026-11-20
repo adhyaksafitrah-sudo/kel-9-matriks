@@ -1547,6 +1547,125 @@ body.dark-mode:not(.dashboard-theme) .content { padding: 22px 18px 30px; }
   .dashboard-theme .content { padding: 18px 12px 24px; }
 }
 
+/* Keep the dashboard overview within the viewport. */
+body.dashboard-theme {
+  height: 100vh;
+  overflow: hidden;
+}
+body.dashboard-theme .main {
+  display: flex;
+  height: 100vh;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+}
+body.dashboard-theme .topbar { flex: 0 0 auto; }
+body.dashboard-theme .content {
+  display: flex;
+  min-height: 0;
+  height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  overflow: hidden;
+  padding: clamp(10px, 2vh, 20px) clamp(12px, 2vw, 30px);
+}
+body.dark-mode.dashboard-theme .content { padding: clamp(10px, 2vh, 20px) clamp(12px, 2vw, 30px); }
+.dashboard-page {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+.dashboard-heading {
+  align-items: center;
+  margin-bottom: clamp(8px, 1.5vh, 16px);
+}
+.dashboard-heading h2 {
+  margin: 4px 0;
+  font-size: clamp(21px, 2vw, 28px);
+}
+.dashboard-heading p { line-height: 1.35; }
+.dashboard-add-button { margin-top: 0; }
+.dashboard-stats {
+  flex: 0 0 auto;
+  gap: clamp(6px, 1vw, 12px);
+  margin-bottom: clamp(8px, 1.5vh, 14px);
+}
+.dashboard-stat-card {
+  min-height: 0;
+  padding: clamp(8px, 1.5vh, 13px) 14px;
+}
+.dashboard-stat-icon {
+  width: 26px;
+  height: 26px;
+  margin-bottom: 5px;
+  font-size: 12px;
+}
+.dashboard-stat-label { font-size: 10px; }
+.dashboard-stat-value { font-size: clamp(19px, 2vw, 23px); }
+.dashboard-stat-hint { margin-top: 2px; font-size: 9px; }
+.dashboard-overview-row {
+  display: grid;
+  min-height: 0;
+  flex: 1 1 auto;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: clamp(8px, 1vw, 14px);
+  margin: 0;
+}
+.dashboard-overview-row > div {
+  width: auto;
+  min-height: 0;
+  max-width: none;
+  padding: 0;
+}
+.dashboard-overview-row .dashboard-panel {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  padding: clamp(10px, 1.5vw, 18px);
+}
+.dashboard-panel-heading { margin-bottom: 8px; }
+.dashboard-line-chart { height: clamp(128px, 30vh, 245px); }
+.dashboard-donut-wrap {
+  width: min(100%, 180px);
+  height: clamp(110px, 22vh, 160px);
+  margin: 0 auto;
+}
+.dashboard-legend { gap: 7px 8px; padding-top: 5px; }
+.dashboard-table tbody td { padding-top: 7px; padding-bottom: 7px; }
+.priority-score-panels { margin-bottom: 20px; }
+
+@media (max-width: 991.98px) {
+  .dashboard-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 575.98px) {
+  .dashboard-heading { align-items: center; flex-direction: row; gap: 8px; }
+  .dashboard-heading h2 { font-size: 20px; }
+  .dashboard-heading p { max-width: none; font-size: 10px; }
+  .dashboard-add-button { padding: 7px 9px; font-size: 9px; white-space: nowrap; }
+  .dashboard-stat-card { padding: 7px 9px; }
+  .dashboard-overview-row { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); }
+  .dashboard-overview-row .dashboard-panel { padding: 9px 7px; }
+  .dashboard-panel-heading { gap: 5px; }
+  .dashboard-panel .panel-title { font-size: 11px; }
+  .dashboard-panel-heading p { font-size: 9px; }
+  .dashboard-period { padding: 4px 5px; font-size: 8px; }
+  .dashboard-line-chart { height: clamp(120px, 26vh, 190px); }
+  .dashboard-donut-wrap { height: clamp(100px, 20vh, 145px); }
+  .dashboard-legend { grid-template-columns: 1fr; gap: 4px; }
+}
+@media (max-height: 650px) {
+  body.dashboard-theme .content { padding-top: 8px; padding-bottom: 8px; }
+  .dashboard-heading { margin-bottom: 6px; }
+  .dashboard-stats { margin-bottom: 6px; }
+  .dashboard-stat-card { padding-top: 6px; padding-bottom: 6px; }
+  .dashboard-stat-icon { width: 22px; height: 22px; margin-bottom: 3px; }
+  .dashboard-stat-hint { display: none; }
+  .dashboard-line-chart { height: clamp(100px, 20vh, 140px); }
+  .dashboard-donut-wrap { height: clamp(86px, 15vh, 110px); }
+  .dashboard-legend { gap: 3px; padding-top: 2px; }
+}
+
 /* ---------------- Cetak / PDF ---------------- */
 @media print {
   .sidebar, .sidebar-overlay, .topbar, .no-print { display: none !important; }
