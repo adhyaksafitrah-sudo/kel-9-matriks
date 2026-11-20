@@ -1128,10 +1128,11 @@ function renderPage(name) {
 let ideaModal = null;
 let confirmModal = null;
 let confirmCallback = null;
+let hasAttemptedSubmit = false;
 
 function updatePreview() {
-  const f = parseInt($('ideaFeas').value, 10);
-  const i = parseInt($('ideaImpact').value, 10);
+  const f = Number($('ideaFeas').value);
+  const i = Number($('ideaImpact').value);
   if (isScore(f) && isScore(i)) {
     $('prevTotal').textContent = f + i;
     $('prevQuad').innerHTML = badgeHtml(getQuadrantKey(f, i));
@@ -1142,6 +1143,7 @@ function updatePreview() {
 }
 
 function clearValidation() {
+  hasAttemptedSubmit = false;
   ['ideaName', 'ideaFeas', 'ideaImpact'].forEach(function (id) { $(id).classList.remove('is-invalid'); });
 }
 
@@ -1163,23 +1165,34 @@ function checkField(id, valid) {
   return valid;
 }
 
-function handleSubmit(event) {
-  event.preventDefault();
+function validateForm() {
   const name = $('ideaName').value.trim();
-  const feas = parseInt($('ideaFeas').value, 10);
-  const impact = parseInt($('ideaImpact').value, 10);
+  const feas = Number($('ideaFeas').value);
+  const impact = Number($('ideaImpact').value);
 
   const okName = checkField('ideaName', name.length > 0);
   const okFeas = checkField('ideaFeas', isScore(feas));
   const okImpact = checkField('ideaImpact', isScore(impact));
-  if (!okName || !okFeas || !okImpact) return;   // data tidak valid: jangan disimpan
+  return { valid: okName && okFeas && okImpact, name: name, feas: feas, impact: impact };
+}
+
+function handleFormChange() {
+  updatePreview();
+  if (hasAttemptedSubmit) validateForm();
+}
+
+function handleSubmit(event) {
+  event.preventDefault();
+  hasAttemptedSubmit = true;
+  const result = validateForm();
+  if (!result.valid) return;   // data tidak valid: jangan disimpan
 
   const id = $('ideaId').value;
   if (id) {
     const item = ideas.find(function (x) { return x.id === id; });
-    if (item) { item.name = name; item.feas = feas; item.impact = impact; }
+    if (item) { item.name = result.name; item.feas = result.feas; item.impact = result.impact; }
   } else {
-    ideas.push({ id: newId(), name: name, feas: feas, impact: impact });
+    ideas.push({ id: newId(), name: result.name, feas: result.feas, impact: result.impact });
   }
 
   persist(ideas);
@@ -1297,8 +1310,9 @@ function init() {
 
   // Form
   $('ideaForm').addEventListener('submit', handleSubmit);
-  $('ideaFeas').addEventListener('change', updatePreview);
-  $('ideaImpact').addEventListener('change', updatePreview);
+  $('ideaName').addEventListener('input', handleFormChange);
+  $('ideaFeas').addEventListener('change', handleFormChange);
+  $('ideaImpact').addEventListener('change', handleFormChange);
   $('ideaModal').addEventListener('shown.bs.modal', function () { $('ideaName').focus(); });
 
   // Konfirmasi
