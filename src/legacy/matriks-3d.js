@@ -6,7 +6,7 @@ const MEDIUM_PRIORITY = 50;
 // Scores 3 and 4 normalize to 5 and 7.5, so their midpoint is 6.25.
 const QUADRANT_SPLIT = 6.25;
 const LABEL_FONT_SIZE = 44;
-const LABEL_TEXT_SIZE = 15;
+const LABEL_TEXT_SIZE = 11;
 const LABEL_CANVAS_HEIGHT = 60;
 const QUADRANT_COLORS = {
   utama: 0x2e9e5b,
