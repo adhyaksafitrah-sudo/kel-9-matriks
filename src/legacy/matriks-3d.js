@@ -388,8 +388,8 @@ export function mountMatrix3D(container, ideas) {
         color: isWinner ? '#ffe19a' : '#c4e6ff',
         weight: 800
       });
-      rankLabel.position.set(0, isWinner ? 0.78 : 0.68, 0);
-      group.add(rankLabel);
+      rankLabel.position.set(position.x, position.y + (isWinner ? 0.78 : 0.68), position.z);
+      scene.add(rankLabel);
     }
 
     group.scale.setScalar(0.001);
